@@ -1,0 +1,39 @@
+{
+  "name": "mdngine",
+  "version": "0.0.0",
+  "description": "Get mongo database executable binary path",
+  "main": "mdngine.js",
+  "scripts": {
+    "preinstall": "npm install m --global && m stable",
+    "test": "mocha mdngine-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volkovasystems/mdngine.git"
+  },
+  "keywords": [
+    "get",
+    "mongo",
+    "database",
+    "executable",
+    "binary",
+    "path",
+    "mdngine"
+  ],
+  "author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/volkovasystems/mdngine/issues"
+  },
+  "homepage": "https://github.com/volkovasystems/mdngine#readme",
+  "dependencies": {
+    "depher": "^0.33.0",
+    "emver": "^0.7.0",
+    "falzy": "^0.20.0",
+    "gnaw": "^0.20.0",
+    "pedon": "^0.14.0",
+    "prpath": "^0.0.0",
+    "raze": "^0.30.0",
+    "truly": "^0.19.0"
+  }
+}
