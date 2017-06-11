@@ -69,6 +69,7 @@ const raze = require( "raze" );
 const truly = require( "truly" );
 
 const VERSION_PATTERN = /^(\d+?\.)+\d+?$/;
+const VERSION = process.env.MONGO_DATABASE_VERSION || "";
 
 const mdngine = function mdngine( version, synchronous, option ){
 	/*;
@@ -83,7 +84,7 @@ const mdngine = function mdngine( version, synchronous, option ){
 
 	let parameter = raze( arguments );
 
-	version = depher( parameter, VERSION_PATTERN, "" );
+	version = depher( parameter, VERSION_PATTERN, VERSION );
 
 	synchronous = depher( parameter, BOOLEAN, false );
 
