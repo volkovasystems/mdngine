@@ -7,4 +7,5 @@ pedon \
 prpath \
 raze \
 truly \
+zelf \
 --save

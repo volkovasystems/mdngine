@@ -54,7 +54,8 @@
 			"pedon": "pedon",
 			"prpath": "prpath",
 			"raze": "raze",
-			"truly": "truly"
+			"truly": "truly",
+			"zelf": "zelf"
 		}
 	@end-include
 */
@@ -67,6 +68,7 @@ const pedon = require( "pedon" );
 const prpath = require( "prpath" );
 const raze = require( "raze" );
 const truly = require( "truly" );
+const zelf = require( "zelf" );
 
 const VERSION_PATTERN = /^(\d+?\.)+\d+?$/;
 const VERSION = process.env.MONGO_DATABASE_VERSION || "";
@@ -128,7 +130,7 @@ const mdngine = function mdngine( version, synchronous, option ){
 		let catcher = null;
 
 		if( pedon.LINUX || pedon.OSX ){
-			catcher = gnaw( "which mongod", option )
+			catcher = gnaw.bind( zelf( this ) )( "which mongod", option )
 				.push( function done( error, path ){
 					if( error instanceof Error ){
 						return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
@@ -142,39 +144,6 @@ const mdngine = function mdngine( version, synchronous, option ){
 					}else{
 						return catcher.pass( null, prpath( path ) );
 					}
-				} )
-				.flow( "m-bin-retrieval", function mbinRetrieval( ){
-					return gnaw( `m bin ${ version }`, option )( function done( error, path ){
-						if( error instanceof Error ){
-							return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
-
-						}else if( falzy( path ) ){
-							return catcher.through( "emver-retrieval" );
-
-						}else{
-							return catcher.pass( null, path );
-						}
-					} );
-				} )
-				.flow( "emver-retrieval", function emverRetrieval( ){
-					return emver( option )( function done( error, version ){
-						if( error instanceof Error ){
-							return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
-
-						}else if( falzy( version ) ){
-							return catcher.pass( new Error( "mongo database not installed" ), "" );
-
-						}else{
-							return gnaw( `m bin ${ version }`, option )( function done( error, path ){
-								if( error instanceof Error ){
-									return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
-
-								}else{
-									return catcher.pass( null, path );
-								}
-							} );
-						}
-					} );
 				} );
 
 		}else if( pedon.WINDOWS ){
@@ -184,6 +153,40 @@ const mdngine = function mdngine( version, synchronous, option ){
 		}else{
 			throw new Error( "cannot determine platform, platform not supported" );
 		}
+
+		catcher.flow( "m-bin-retrieval", function mbinRetrieval( ){
+			return gnaw( `m bin ${ version }`, option )( function done( error, path ){
+				if( error instanceof Error ){
+					return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
+
+				}else if( falzy( path ) ){
+					return catcher.through( "emver-retrieval" );
+
+				}else{
+					return catcher.pass( null, path );
+				}
+			} );
+		} )
+		.flow( "emver-retrieval", function emverRetrieval( ){
+			return emver( option )( function done( error, version ){
+				if( error instanceof Error ){
+					return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
+
+				}else if( falzy( version ) ){
+					return catcher.pass( new Error( "mongo database not installed" ), "" );
+
+				}else{
+					return gnaw( `m bin ${ version }`, option )( function done( error, path ){
+						if( error instanceof Error ){
+							return catcher.pass( new Error( `cannot get path to mongo database executable binary, ${ error.stack }` ), "" );
+
+						}else{
+							return catcher.pass( null, path );
+						}
+					} );
+				}
+			} );
+		} );
 
 		return catcher;
 	}
